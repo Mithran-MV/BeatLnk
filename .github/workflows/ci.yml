@@ -1,0 +1,57 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  mainnet:
+    name: Mainnet app (lint, typecheck, build)
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: mainnet
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: mainnet/package-lock.json
+
+      - run: npm ci
+      - run: npx eslint src
+      - run: npx tsc --noEmit
+      - run: npx next build
+
+  backend:
+    name: Chat backend (install, parse)
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: backend
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: backend/package-lock.json
+
+      - run: npm ci
+
+      # The Socket.IO server needs no build step; this checks the dependencies
+      # resolve and the module parses as the ES module it is.
+      - run: node --check server.js
+
+  # The testnet app is deliberately not built here: four of its API routes import
+  # "@/auth", and that module has never existed in testnet/src. It cannot compile
+  # until the file is added or those routes are changed, and a job that is red
+  # from the first run teaches everyone to ignore CI.
