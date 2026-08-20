@@ -1,14 +1,10 @@
 'use client';
 
 import { useEffect, useMemo, useCallback } from 'react';
-import { Home, User, Compass, ChatBubble, Settings } from 'iconoir-react';
+import { Home, User, Compass, ChatBubble } from 'iconoir-react';
 import { useRouter, usePathname } from 'next/navigation';
 
-type NavigationProps = {
-  walletBadge?: string | number; // e.g., '120' or 120
-};
-
-export const Navigation = ({ walletBadge }: NavigationProps) => {
+export const Navigation = () => {
   const router = useRouter();
   const pathname = usePathname();
 

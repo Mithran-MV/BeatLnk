@@ -3,7 +3,6 @@ import { verifyProof } from "@reclaimprotocol/js-sdk";
 import util from "node:util";
 import { storeArtistAnalysis } from "@/utils/artistDataStore";
 import { updateUserProofs, getLatestUserProof } from "@/utils/ipnsManager";
-import { auth } from "@/auth";
 
 export async function POST(req: NextRequest) {
   try {
@@ -75,7 +74,7 @@ export async function POST(req: NextRequest) {
 
     // Store proof for persistent storage and history
     // Use wallet address from query parameter (most reliable)
-    let walletAddress = queryWallet || `wallet_${Date.now()}`;
+    const walletAddress = queryWallet || `wallet_${Date.now()}`;
     
     
     // Add wallet address to proof context for IPNS lookup
@@ -96,7 +95,7 @@ export async function POST(req: NextRequest) {
     
     
     // Get previous proof for comparison
-    const previousProof = await getLatestUserProof(walletAddress);
+    await getLatestUserProof(walletAddress);
     
     // Store proof in IPNS
     const ipnsResult = await updateUserProofs(walletAddress, enhancedProof);

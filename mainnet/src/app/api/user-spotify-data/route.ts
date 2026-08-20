@@ -39,7 +39,7 @@ export async function GET(req: NextRequest) {
     let allProofs;
     try {
       allProofs = await getUserProofs(walletAddress);
-    } catch (ipnsError) {
+    } catch {
       allProofs = null;
     }
     

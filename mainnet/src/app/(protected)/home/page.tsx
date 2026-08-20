@@ -8,7 +8,6 @@ import TopArtists from '@/components/TopArtists';
 export default async function Home() {
   const session = await auth();
   const username = session?.user?.username ?? 'you';
-  const pfp = session?.user?.profilePictureUrl ?? undefined;
 
 
   return (

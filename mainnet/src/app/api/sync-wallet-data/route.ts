@@ -1,9 +1,9 @@
-import { NextRequest, NextResponse } from "next/server";
+import { NextResponse } from "next/server";
 import { auth } from "@/auth";
 import { updateUserProofs } from "@/utils/ipnsManager";
 import { getArtistAnalysis } from "@/utils/artistDataStore";
 
-export async function POST(req: NextRequest) {
+export async function POST() {
   try {
     const session = await auth();
     
