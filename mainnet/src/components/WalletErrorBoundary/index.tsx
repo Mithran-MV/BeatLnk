@@ -35,7 +35,7 @@ export default class WalletErrorBoundary extends Component<Props, State> {
     throw error;
   }
 
-  componentDidCatch(error: Error, errorInfo: any) {
+  componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
     // Only log wallet-related errors
     if (this.state.hasError) {
       console.warn('Wallet error boundary caught:', error, errorInfo);
@@ -53,7 +53,7 @@ export default class WalletErrorBoundary extends Component<Props, State> {
                 Wallet Extension Issue
               </h3>
               <p className="text-xs text-yellow-700 mt-1">
-                There was an issue with a wallet extension. This won't affect the main functionality.
+                There was an issue with a wallet extension. This won&apos;t affect the main functionality.
               </p>
             </div>
           </div>

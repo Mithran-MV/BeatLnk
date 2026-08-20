@@ -1,9 +1,10 @@
 'use client';
 import { useState, useEffect } from 'react';
+import type { DebugPayload } from '@/types/beatlnk';
 import { useRouter } from 'next/navigation';
 
 export default function DebugPanel() {
-  const [debugData, setDebugData] = useState<any>(null);
+  const [debugData, setDebugData] = useState<DebugPayload | null>(null);
   const [loading, setLoading] = useState(false);
   const [syncing, setSyncing] = useState(false);
   const router = useRouter();
@@ -96,9 +97,9 @@ export default function DebugPanel() {
           <div className="bg-gray-700 rounded p-3">
             <h4 className="font-semibold text-yellow-400 mb-2">👤 Session</h4>
             <div className="text-sm space-y-1">
-              <p><span className="text-gray-300">Wallet:</span> <code className="bg-gray-600 px-1 rounded">{debugData.debug.session.walletAddress}</code></p>
-              <p><span className="text-gray-300">User ID:</span> <code className="bg-gray-600 px-1 rounded">{debugData.debug.session.user?.id || 'N/A'}</code></p>
-              <p><span className="text-gray-300">Username:</span> <code className="bg-gray-600 px-1 rounded">{debugData.debug.session.user?.username || 'N/A'}</code></p>
+              <p><span className="text-gray-300">Wallet:</span> <code className="bg-gray-600 px-1 rounded">{debugData.debug?.session.walletAddress}</code></p>
+              <p><span className="text-gray-300">User ID:</span> <code className="bg-gray-600 px-1 rounded">{debugData.debug?.session.user?.id || 'N/A'}</code></p>
+              <p><span className="text-gray-300">Username:</span> <code className="bg-gray-600 px-1 rounded">{debugData.debug?.session.user?.username || 'N/A'}</code></p>
             </div>
           </div>
 
@@ -109,13 +110,13 @@ export default function DebugPanel() {
             {/* In-Memory */}
             <div className="mb-2">
               <div className="flex items-center space-x-2">
-                <span className={`w-3 h-3 rounded-full ${debugData.debug.dataSources.inMemory.available ? 'bg-green-500' : 'bg-red-500'}`}></span>
+                <span className={`w-3 h-3 rounded-full ${debugData.debug?.dataSources.inMemory.available ? 'bg-green-500' : 'bg-red-500'}`}></span>
                 <span className="text-sm font-medium">In-Memory Store</span>
               </div>
-              {debugData.debug.dataSources.inMemory.available && (
+              {debugData.debug?.dataSources.inMemory.available && (
                 <div className="ml-5 text-xs text-gray-300 mt-1">
-                  <p>Top Artist: {debugData.debug.dataSources.inMemory.data?.topArtist?.name || 'None'}</p>
-                  <p>Total Songs: {debugData.debug.dataSources.inMemory.data?.totalSongs || 0}</p>
+                  <p>Top Artist: {debugData.debug?.dataSources.inMemory.data?.topArtist?.name || 'None'}</p>
+                  <p>Total Songs: {debugData.debug?.dataSources.inMemory.data?.totalSongs || 0}</p>
                 </div>
               )}
             </div>
@@ -123,12 +124,12 @@ export default function DebugPanel() {
             {/* IPFS Hash */}
             <div className="mb-2">
               <div className="flex items-center space-x-2">
-                <span className={`w-3 h-3 rounded-full ${debugData.debug.dataSources.ipfsHash.available ? 'bg-green-500' : 'bg-red-500'}`}></span>
+                <span className={`w-3 h-3 rounded-full ${debugData.debug?.dataSources.ipfsHash.available ? 'bg-green-500' : 'bg-red-500'}`}></span>
                 <span className="text-sm font-medium">IPFS Hash</span>
               </div>
-              {debugData.debug.dataSources.ipfsHash.available && (
+              {debugData.debug?.dataSources.ipfsHash.available && (
                 <div className="ml-5 text-xs text-gray-300 mt-1">
-                  <code className="bg-gray-600 px-1 rounded break-all">{debugData.debug.dataSources.ipfsHash.hash}</code>
+                  <code className="bg-gray-600 px-1 rounded break-all">{debugData.debug?.dataSources.ipfsHash.hash}</code>
                 </div>
               )}
             </div>
@@ -136,13 +137,19 @@ export default function DebugPanel() {
             {/* IPNS */}
             <div className="mb-2">
               <div className="flex items-center space-x-2">
-                <span className={`w-3 h-3 rounded-full ${debugData.debug.dataSources.ipns.available ? 'bg-green-500' : 'bg-red-500'}`}></span>
+                <span className={`w-3 h-3 rounded-full ${debugData.debug?.dataSources.ipns.available ? 'bg-green-500' : 'bg-red-500'}`}></span>
                 <span className="text-sm font-medium">IPNS Storage</span>
               </div>
               <div className="ml-5 text-xs text-gray-300 mt-1">
-                <p>Proofs Count: {debugData.debug.dataSources.ipns.count}</p>
-                {debugData.debug.dataSources.ipns.available && (
-                  <p>Latest: {new Date(debugData.debug.dataSources.ipns.data[debugData.debug.dataSources.ipns.data.length - 1]?.addedAt).toLocaleString()}</p>
+                <p>Proofs Count: {debugData.debug?.dataSources.ipns.count}</p>
+                {debugData.debug?.dataSources.ipns.available && (
+                  <p>Latest: {(() => {
+                    const proofs = debugData.debug?.dataSources.ipns.data ?? [];
+                    const addedAt = proofs[proofs.length - 1]?.addedAt;
+                    return typeof addedAt === 'string' || typeof addedAt === 'number'
+                      ? new Date(addedAt).toLocaleString()
+                      : 'unknown';
+                  })()}</p>
                 )}
               </div>
             </div>
@@ -152,7 +159,7 @@ export default function DebugPanel() {
           <div className="bg-blue-900 border border-blue-700 rounded p-3">
             <h4 className="font-semibold text-blue-300 mb-2">💡 Recommendations</h4>
             <div className="text-sm text-blue-200 space-y-2">
-              {!debugData.debug.dataSources.inMemory.available && !debugData.debug.dataSources.ipns.available && (
+              {!debugData.debug?.dataSources.inMemory.available && !debugData.debug?.dataSources.ipns.available && (
                 <div className="space-y-2">
                   <p>• No Spotify data found. You need to verify your account first.</p>
                   <button 
@@ -163,13 +170,13 @@ export default function DebugPanel() {
                   </button>
                 </div>
               )}
-              {debugData.debug.dataSources.inMemory.available && !debugData.debug.dataSources.ipns.available && (
+              {debugData.debug?.dataSources.inMemory.available && !debugData.debug?.dataSources.ipns.available && (
                 <div className="space-y-2">
-                  <p>• ✅ In-memory data available! Click "Sync Data" to store in IPNS with correct wallet address.</p>
-                  <p className="text-xs text-blue-300">Current wallet: {debugData.debug.session.walletAddress}</p>
+                  <p>• ✅ In-memory data available! Click &quot;Sync Data&quot; to store in IPNS with correct wallet address.</p>
+                  <p className="text-xs text-blue-300">Current wallet: {debugData.debug?.session.walletAddress}</p>
                 </div>
               )}
-              {debugData.debug.dataSources.ipns.available && (
+              {debugData.debug?.dataSources.ipns.available && (
                 <p>• ✅ IPNS data available! The app should work normally.</p>
               )}
             </div>

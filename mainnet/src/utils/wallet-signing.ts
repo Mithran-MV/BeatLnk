@@ -45,7 +45,9 @@ export async function signMessageWithWorldCoin(message: string): Promise<WalletS
  * Keep this as a backup option if MiniKit is not available
  */
 export async function signMessageWithBrowserWallet(message: string): Promise<WalletSigningData> {
-  if (!isWalletAvailable()) {
+  const ethereum = window.ethereum;
+
+  if (!ethereum) {
     throw new Error('MetaMask or compatible wallet not found');
   }
 
@@ -53,7 +55,7 @@ export async function signMessageWithBrowserWallet(message: string): Promise<Wal
     // Check if wallet is available and connected (with error handling)
     let isConnected = false;
     try {
-      isConnected = window.ethereum.isConnected ? window.ethereum.isConnected() : false;
+      isConnected = ethereum.isConnected ? ethereum.isConnected() : false;
     } catch (connectionError) {
       console.warn('Wallet connection check failed:', connectionError);
       // Continue without connection check if it fails
@@ -64,7 +66,7 @@ export async function signMessageWithBrowserWallet(message: string): Promise<Wal
     }
 
     // Request account access
-    const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
+    const accounts = (await ethereum.request({ method: 'eth_requestAccounts' })) as string[];
     const account = accounts[0];
 
     if (!account) {
@@ -72,10 +74,10 @@ export async function signMessageWithBrowserWallet(message: string): Promise<Wal
     }
 
     // Sign the message
-    const signature = await window.ethereum.request({
+    const signature = (await ethereum.request({
       method: 'personal_sign',
       params: [message, account],
-    });
+    })) as string;
 
     return {
       publicKey: account,
@@ -91,7 +93,7 @@ export async function signMessageWithBrowserWallet(message: string): Promise<Wal
 declare global {
   interface Window {
     ethereum?: {
-      request: (args: { method: string; params?: any[] }) => Promise<any>;
+      request: (args: { method: string; params?: unknown[] }) => Promise<unknown>;
       isConnected?: () => boolean;
       on?: (event: string, callback: (accounts: string[]) => void) => void;
       removeListener?: (event: string, callback: (accounts: string[]) => void) => void;

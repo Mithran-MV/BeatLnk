@@ -1,8 +1,10 @@
 // Simple in-memory store to capture artist analysis from console logs
-let storedArtistAnalysis: any = null;
+import type { ArtistAnalysis } from '@/types/beatlnk';
+
+let storedArtistAnalysis: ArtistAnalysis | null = null;
 let storedIpfsHash: string | null = null;
 
-export function storeArtistAnalysis(analysis: any) {
+export function storeArtistAnalysis(analysis: ArtistAnalysis) {
   storedArtistAnalysis = analysis;
   console.log('📊 Artist analysis stored:', analysis);
 }

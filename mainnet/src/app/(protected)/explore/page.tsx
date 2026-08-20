@@ -34,7 +34,7 @@ export default function Explore() {
 
   // Optional: listen for a custom event from TopArtists if it emits one.
   useEffect(() => {
-    function onArtistSelected(e: any) {
+    function onArtistSelected(e: CustomEvent<{ id?: string; name?: string; image?: string }>) {
       // Expecting: new CustomEvent('artist:selected', { detail: { id, name, image } })
       if (e?.detail?.id) setSelected({ id: e.detail.id, name: e.detail.name, image: e.detail.image });
     }

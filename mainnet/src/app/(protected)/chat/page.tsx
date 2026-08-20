@@ -21,8 +21,8 @@ const SOCKET_URL = process.env.NEXT_PUBLIC_SOCKET_URL || "http://localhost:3001"
 
 /* -------------------- Utils -------------------- */
 function genId(): string {
-  try { /* @ts-ignore */ if (typeof crypto !== "undefined" && crypto?.randomUUID) return crypto.randomUUID(); } catch {}
-  try { /* @ts-ignore */ const c = crypto?.getRandomValues ? crypto : null;
+  try { if (typeof crypto !== "undefined" && crypto?.randomUUID) return crypto.randomUUID(); } catch {}
+  try { const c = typeof crypto !== "undefined" ? crypto : null;
     if (c) { const a = new Uint8Array(16); c.getRandomValues(a); a[6]=(a[6]&0x0f)|0x40; a[8]=(a[8]&0x3f)|0x80;
       const h=[...a].map(b=>b.toString(16).padStart(2,"0"));
       return `${h.slice(0,4).join("")}-${h.slice(4,6).join("")}-${h.slice(6,8).join("")}-${h.slice(8,10).join("")}-${h.slice(10).join("")}`;
@@ -141,7 +141,7 @@ function ChatStep({
     useState<"connecting"|"connected"|"reconnecting"|"disconnected">("connecting");
 
   const listRef = useRef<HTMLDivElement>(null);
-  const typingTimer = useRef<any>(null);
+  const typingTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const lastTypingSentAt = useRef(0);
 
   useEffect(()=>{ const el=listRef.current; if(el) el.scrollTop=el.scrollHeight; },[msgs]);
@@ -166,7 +166,8 @@ function ChatStep({
       setMsgsByRoom(prev=>({...prev, [msg.room]: [...(prev[msg.room]||[]), msg]}));
     });
     socket.on("typing", ({name}:{name:string})=>{
-      setTyping(`${name} is typing…`); clearTimeout(typingTimer.current);
+      setTyping(`${name} is typing…`);
+      if (typingTimer.current) clearTimeout(typingTimer.current);
       typingTimer.current = setTimeout(()=>setTyping(""), 900);
     });
 

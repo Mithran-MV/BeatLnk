@@ -1,5 +1,6 @@
 'use client';
 import { useState, useEffect } from 'react';
+import type { ArtistAnalysis, StoredProof } from '@/types/beatlnk';
 
 interface ProofHistory {
   proofId: string;
@@ -11,8 +12,8 @@ interface ProofHistory {
 interface UserProofsData {
   userId: string;
   totalProofs: number;
-  latestProof: any;
-  latestAnalysis: any;
+  latestProof: StoredProof | null;
+  latestAnalysis: ArtistAnalysis | null;
   allProofs: ProofHistory[];
 }
 
@@ -45,7 +46,7 @@ export default function ProofHistory() {
         allProofs: []
       });
       
-    } catch (err) {
+    } catch {
       // Show empty state on error
       setProofsData({
         userId: 'unknown',
@@ -104,10 +105,10 @@ export default function ProofHistory() {
           </div>
           <h3 className="text-xl font-semibold text-yellow-800 mb-2">No Verification History</h3>
           <p className="text-yellow-700 mb-4">
-            You haven't verified your Spotify account yet. Start your verification journey to see your music data here!
+            You haven&apos;t verified your Spotify account yet. Start your verification journey to see your music data here!
           </p>
           <p className="text-sm text-yellow-600">
-            Go to the Home page and click "Start Verification" to begin.
+            Go to the Home page and click &quot;Start Verification&quot; to begin.
           </p>
         </div>
       </div>

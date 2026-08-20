@@ -1,17 +1,17 @@
 'use client';
 import { useState } from 'react';
-import { ReclaimProofRequest } from '@reclaimprotocol/js-sdk';
+import { ReclaimProofRequest, type Proof } from '@reclaimprotocol/js-sdk';
 import TokenMinting from '../TokenMinting';
  
 function Reclaim() {
-  const [proofs, setProofs] = useState<any>(null);
+  const [proofs, setProofs] = useState<string | Proof | Proof[] | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [uploadStatus, setUploadStatus] = useState<string>('');
   const [ipfsHash, setIpfsHash] = useState<string>('');
   const [showTokenMinting, setShowTokenMinting] = useState(false);
   const [verificationStep, setVerificationStep] = useState<'idle' | 'connecting' | 'verifying' | 'uploading' | 'complete'>('idle');
  
-  const uploadToLighthouse = async (proofs: any) => {
+  const uploadToLighthouse = async (proofs: string | Proof | Proof[]) => {
     try {
       setVerificationStep('uploading');
       setUploadStatus('Uploading to Lighthouse...');
@@ -71,11 +71,11 @@ function Reclaim() {
       await reclaimProofRequest.startSession({
         onSuccess: async (proofs) => {
           console.log('Successfully created proof', proofs);
-          setProofs(proofs);
+          setProofs(proofs ?? null);
           setIsLoading(false);
 
           // Upload to Lighthouse
-          await uploadToLighthouse(proofs);
+          if (proofs) await uploadToLighthouse(proofs);
         },
         onError: (error) => {
           console.error('Verification failed', error);

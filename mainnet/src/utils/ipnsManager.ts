@@ -1,4 +1,5 @@
 import lighthouse from '@lighthouse-web3/sdk';
+import type { StoredProof } from '@/types/beatlnk';
 
 const LIGHTHOUSE_API_KEY = process.env.LIGHTHOUSE_API!;
 
@@ -46,13 +47,13 @@ export async function getUserIpnsKey(walletAddress: string): Promise<{ipnsName: 
   }
 }
 
-export async function updateUserProofs(walletAddress: string, newProof: any): Promise<{ipnsId: string, gatewayUrl: string}> {
+export async function updateUserProofs(walletAddress: string, newProof: StoredProof): Promise<{ipnsId: string, gatewayUrl: string}> {
   try {
     // Get user's IPNS key
     const keyInfo = await getUserIpnsKey(walletAddress);
     
     // Get existing proofs from IPNS (if any)
-    let existingProofs: any[] = [];
+    let existingProofs: StoredProof[] = [];
     try {
       // Try to get existing record from IPNS using Lighthouse gateway
       const response = await fetch(`https://gateway.lighthouse.storage/ipns/${keyInfo.ipnsId}`);
@@ -60,7 +61,7 @@ export async function updateUserProofs(walletAddress: string, newProof: any): Pr
         const data = await response.json();
         existingProofs = Array.isArray(data) ? data : [data];
       }
-    } catch (error) {
+    } catch {
       // No existing data, start fresh
       console.log('No existing IPNS record found, starting fresh');
     }
@@ -119,7 +120,7 @@ export async function updateUserProofs(walletAddress: string, newProof: any): Pr
   }
 }
 
-export async function getUserProofs(walletAddress: string): Promise<any[]> {
+export async function getUserProofs(walletAddress: string): Promise<StoredProof[]> {
   try {
     // First, try to get from in-memory cache
     let keyInfo;
@@ -156,13 +157,13 @@ export async function getUserProofs(walletAddress: string): Promise<any[]> {
                   break;
                 }
               }
-            } catch (testError) {
+            } catch {
               // Skip this key and try the next one
               continue;
             }
           }
         }
-      } catch (getAllError) {
+      } catch {
         // Silently handle error
       }
     }
@@ -188,7 +189,7 @@ export async function getUserProofs(walletAddress: string): Promise<any[]> {
   }
 }
 
-export async function getLatestUserProof(walletAddress: string): Promise<any | null> {
+export async function getLatestUserProof(walletAddress: string): Promise<StoredProof | null> {
   try {
     const proofs = await getUserProofs(walletAddress);
     return proofs.length > 0 ? proofs[proofs.length - 1] : null;
@@ -198,7 +199,7 @@ export async function getLatestUserProof(walletAddress: string): Promise<any | n
   }
 }
 
-export async function getAllUserKeys(): Promise<any[]> {
+export async function getAllUserKeys(): Promise<unknown[]> {
   try {
     const allKeys = await lighthouse.getAllKeys(LIGHTHOUSE_API_KEY);
     return allKeys.data || [];
@@ -215,7 +216,7 @@ export async function removeUserKey(walletAddress: string): Promise<boolean> {
     }
     
     const ipnsName = userIpnsKeys[walletAddress];
-    const removeRes = await lighthouse.removeKey(ipnsName, LIGHTHOUSE_API_KEY);
+    await lighthouse.removeKey(ipnsName, LIGHTHOUSE_API_KEY);
     
     // Remove from local storage
     delete userIpnsKeys[walletAddress];
