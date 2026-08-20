@@ -71,7 +71,7 @@ export default function AutoProofFetcher() {
         }
       });
       
-    } catch (err) {
+    } catch {
       // Show sample data on error
       setProofData({
         metadata: {
@@ -176,7 +176,7 @@ export default function AutoProofFetcher() {
                 Verify your Spotify account to see your music preferences and unlock exclusive NFTs!
               </p>
               <p className="text-sm text-yellow-600">
-                Go to the Home page and click "Start Verification" to begin.
+                Go to the Home page and click &quot;Start Verification&quot; to begin.
               </p>
             </div>
           )}

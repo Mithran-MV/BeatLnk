@@ -107,7 +107,7 @@ export default function TokenMinting({ onMintingComplete }: TokenMintingProps) {
           </div>
           <h2 className="text-2xl font-bold text-gray-800 mb-3">🪙 Mint Your DataCoin Tokens</h2>
           <p className="text-gray-600 text-base leading-relaxed max-w-md mx-auto">
-            You've successfully verified your Spotify data! Now mint your exclusive DataCoin tokens as a reward.
+            You&apos;ve successfully verified your Spotify data! Now mint your exclusive DataCoin tokens as a reward.
           </p>
         </div>
 
